@@ -4,11 +4,20 @@
 #include <QSqlError>
 #include <QTableWidgetItem>
 #include <QDebug>
+#include <QMessageBox>
+#include "event.h"
+#include "connection.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    // Essayer de se connecter à la base de données
+    Connection connection;
+    if (!connection.createconnect()) {
+        QMessageBox::critical(this, "Erreur de connexion", "La connexion à la base de données a échoué.");
+        return;
+    }
 
     // Rafraîchir la table au démarrage
     on_refreshButton_clicked();
@@ -19,6 +28,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::on_addButton_clicked() {
+    // Récupérer les données saisies par l'utilisateur
     int id = ui->idLineEdit->text().toInt();
     QString name = ui->nameLineEdit->text();
     QString date = ui->dateLineEdit->text();
@@ -27,55 +37,54 @@ void MainWindow::on_addButton_clicked() {
     QString duration = ui->durationLineEdit->text();
     float price = ui->priceLineEdit->text().toFloat();
 
+    // Valider les données saisies
     if (id <= 0) {
-        qDebug() << "L'ID ne peut pas être nul ou négatif.";
+        QMessageBox::warning(this, "Entrée invalide", "L'ID ne peut pas être nul ou négatif.");
+        return;
+    }
+    if (name.isEmpty() || date.isEmpty() || type.isEmpty() || duration.isEmpty()) {
+        QMessageBox::warning(this, "Entrée invalide", "Tous les champs doivent être remplis.");
         return;
     }
 
-    QSqlQuery query;
-    query.prepare("INSERT INTO EVENTS (ID_EVENT, NAME, DATE_EVENT, CAPACITY, TYPE, DURATION, PRICE) "
-                  "VALUES (:id, :name, :date, :capacity, :type, :duration, :price)");
-    query.bindValue(":id", id);
-    query.bindValue(":name", name);
-    query.bindValue(":date", date);
-    query.bindValue(":capacity", capacity);
-    query.bindValue(":type", type);
-    query.bindValue(":duration", duration);
-    query.bindValue(":price", price);
+    // Créer un objet Event et définir ses propriétés
+    Event event;
+    event.setId(id);
+    event.setName(name);
+    event.setDate(date);
+    event.setCapacity(capacity);
+    event.setType(type);
+    event.setDuration(duration);
+    event.setPrice(price);
 
-    if (query.exec()) {
-        qDebug() << "Événement ajouté avec succès.";
+    // Ajouter l'événement à la base de données
+    if (event.addEvent()) {
+        QMessageBox::information(this, "Succès", "Événement ajouté avec succès.");
     } else {
-        qDebug() << "Erreur lors de l'ajout de l'événement:" << query.lastError().text();
+        QMessageBox::critical(this, "Erreur", "Échec de l'ajout de l'événement. Consultez les logs pour plus de détails.");
     }
 
+    // Rafraîchir l'interface après ajout
     on_refreshButton_clicked();
 }
 
 void MainWindow::on_refreshButton_clicked() {
-    ui->eventTableWidget->clearContents();
-    ui->eventTableWidget->setRowCount(0);
-
-    QSqlQuery query("SELECT * FROM EVENTS");
-    if (!query.exec()) {
-        qDebug() << "Erreur lors du rafraîchissement:" << query.lastError().text();
+    // Vérification de la connexion à la base de données
+    QSqlDatabase db = QSqlDatabase::database();
+    if (!db.isValid()) {
+        qDebug() << "La base de données n'est pas valide.";
         return;
     }
 
-    int row = 0;
-    while (query.next()) {
-        ui->eventTableWidget->insertRow(row);
-        ui->eventTableWidget->setItem(row, 0, new QTableWidgetItem(query.value("ID_EVENT").toString()));
-        ui->eventTableWidget->setItem(row, 1, new QTableWidgetItem(query.value("NAME").toString()));
-        ui->eventTableWidget->setItem(row, 2, new QTableWidgetItem(query.value("DATE_EVENT").toString()));
-        ui->eventTableWidget->setItem(row, 3, new QTableWidgetItem(query.value("CAPACITY").toString()));
-        ui->eventTableWidget->setItem(row, 4, new QTableWidgetItem(query.value("TYPE").toString()));
-        ui->eventTableWidget->setItem(row, 5, new QTableWidgetItem(query.value("DURATION").toString()));
-        ui->eventTableWidget->setItem(row, 6, new QTableWidgetItem(query.value("PRICE").toString()));
-        row++;
+    if (!db.isOpen()) {
+        qDebug() << "La base de données n'est pas ouverte.";
+        qDebug() << "Erreur :" << db.lastError().text();
+        return;
     }
 
-    ui->eventTableWidget->resizeColumnsToContents();
+    qDebug() << "Connexion à la base de données établie et valide.";
+
+    // Vous pouvez ici ajouter le code pour rafraîchir la table ou la vue des événements
 }
 
 void MainWindow::on_modifyButton_clicked() {

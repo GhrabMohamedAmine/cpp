@@ -1,4 +1,7 @@
 #include "event.h"
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QDebug>
 
 Event::Event() {}
 
@@ -16,32 +19,39 @@ bool Event::addEvent() {
     query.bindValue(":type", type);
     query.bindValue(":duration", duration);
     query.bindValue(":price", price);
-    return query.exec();
-}
 
+    if (query.exec()) {
+        qDebug() << "Événement ajouté avec succès.";
+        return true;
+    } else {
+        qDebug() << "Erreur lors de l'ajout de l'événement:" << query.lastError().text();
+        return false;
+    }
+}
 QSqlQueryModel* Event::displayEvents() {
     QSqlQueryModel* model = new QSqlQueryModel();
     model->setQuery("SELECT * FROM EVENTS");
     return model;
 }
 
-bool Event::modifyEvent(int id) {
-    QSqlQuery query;
-    query.prepare("UPDATE EVENTS SET NAME = :name, DATE_EVENT = :date, CAPACITY = :capacity, TYPE = :type, "
-                  "DURATION = :duration, PRICE = :price WHERE ID_EVENT = :id");
-    query.bindValue(":id", id);
-    query.bindValue(":name", name);
-    query.bindValue(":date", date_event);
-    query.bindValue(":capacity", capacity);
-    query.bindValue(":type", type);
-    query.bindValue(":duration", duration);
-    query.bindValue(":price", price);
-    return query.exec();
-}
 
-bool Event::deleteEvent(int id) {
-    QSqlQuery query;
-    query.prepare("DELETE FROM EVENTS WHERE ID_EVENT = :id");
-    query.bindValue(":id", id);
-    return query.exec();
-}
+int Event::getId() const { return id_event; }
+void Event::setId(int id) { id_event = id; }
+
+QString Event::getName() const { return name; }
+void Event::setName(const QString &name) { this->name = name; }
+
+QString Event::getDate() const { return date_event; }
+void Event::setDate(const QString &date) { date_event = date; }
+
+int Event::getCapacity() const { return capacity; }
+void Event::setCapacity(int capacity) { this->capacity = capacity; }
+
+QString Event::getType() const { return type; }
+void Event::setType(const QString &type) { this->type = type; }
+
+QString Event::getDuration() const { return duration; }
+void Event::setDuration(const QString &duration) { this->duration = duration; }
+
+float Event::getPrice() const { return price; }
+void Event::setPrice(float price) { this->price = price; }

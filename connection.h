@@ -3,10 +3,11 @@
 
 #include <QSqlDatabase>
 
-class Connection {
+class Connection
+{
 public:
-    Connection();           // Constructeur
-    bool createconnect();   // Méthode pour établir la connexion
+    Connection();
+    bool createconnect();
 };
 
 #endif // CONNECTION_H

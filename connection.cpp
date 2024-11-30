@@ -9,16 +9,16 @@ bool Connection::createconnect() {
 
     // Configurer la base de données
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName("CPP_Projet");  // Nom de la source de données
-    db.setUserName("amine");           // Nom d'utilisateur
-    db.setPassword("esprit");          // Mot de passe
+    db.setDatabaseName("Driver={Oracle in instantclient12_2};Dbq=localhost:1521/XE;Uid=oussama;Pwd=oussama;");
 
-    // Ouvrir la connexion
+    qDebug() << "Tentative de connexion à la base de données...";
+
     if (db.open()) {
         test = true;
         qDebug() << "Connexion à la base de données réussie.";
     } else {
-        qDebug() << "Erreur de connexion à la base de données:" << db.lastError().text();
+        qDebug() << "Erreur de connexion à la base de données:";
+        qDebug() << db.lastError().text();
         qDebug() << "Message d'erreur complet : " << db.lastError().driverText();
     }
 
