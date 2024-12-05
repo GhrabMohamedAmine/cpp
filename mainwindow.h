@@ -6,6 +6,8 @@
 #include <QtGui>
 #include <QtWidgets>
 #include <QtCharts>
+#include <QSerialPortInfo>
+#include <QSerialPort>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -27,14 +29,20 @@ private slots:
     void on_deleteButton_clicked();
 
     void on_eventTableWidget_cellClicked(int row, int column);
-
+    void readArduinoData();
 
     void on_Recherche_clicked();
 
     void on_eventTableWidget_cellDoubleClicked(int row, int column);
 
+    void on_exportPdfButton_clicked();
+
 private:
     Ui::MainWindow *ui;
+    QSerialPort *arduino;
+    QString arduinoPortName;
+    void connectToArduino();    // Méthode pour initialiser la connexion Arduino
+
 };
 
 #endif // MAINWINDOW_H

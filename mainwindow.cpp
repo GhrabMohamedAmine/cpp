@@ -13,10 +13,23 @@
 #include <QtCharts/QChart>
 #include <QPainter>
 #include <event.h>
+#include <QSerialPortInfo>
+#include <QSerialPort>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
-    ui->setupUi(this);
+        ui->setupUi(this);
+        arduino = new QSerialPort(this);
+           connectToArduino();
+
+         qDebug() << "Nombre de port"<<QSerialPortInfo::availablePorts().length();
+         foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
+             qDebug() << "Port Name: " << portInfo.portName();
+             qDebug() << "Description: " << portInfo.description();
+             qDebug() << "Manufacturer: " << portInfo.manufacturer();
+             qDebug() << "System Location: " << portInfo.systemLocation();
+         }
         connect(ui->eventTableWidget, &QTableWidget::cellClicked, this, &MainWindow::on_eventTableWidget_cellClicked);
         Connection connection;
         if (!connection.createconnect()) {
@@ -24,12 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
             return;
         }
         QPieSeries *series = new QPieSeries();
-
-        // Obtenez les pourcentages des événements
         Event event;
         QVector<int> percents = Event::getPercent();
-
-        // Ajoutez les sections du graphique avec leurs noms et pourcentages
         series->append("PRIVE", percents[1] * 100 / percents[0]);
         series->append("PROFESSIONNEL", percents[2] * 100 / percents[0]);
         series->append("SAISIONNIER", percents[3] * 100 / percents[0]);
@@ -42,8 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
         series->slices().at(2)->setBrush(QColor(75, 192, 192)); // SPORT (vert)
         series->slices().at(3)->setBrush(QColor(153, 102, 255)); // CULTUREL (violet)
         series->slices().at(4)->setBrush(QColor(255, 159, 64)); // AUTRE SPORT (orange)
-
-        // Ajouter le nom et les pourcentages dans les secteurs
         for (int i = 0; i < series->slices().count(); ++i) {
             QPieSlice *slice = series->slices().at(i);
             QString name = slice->label();  // Nom du secteur (ex: "PRIVE", "PRO", etc.)
@@ -52,23 +59,16 @@ MainWindow::MainWindow(QWidget *parent)
             slice->setLabelVisible(true);  // Rendre les labels visibles
         }
 
-        // Créez le graphique et ajoutez la série
         QChart *chart = new QChart();
         chart->addSeries(series);
         chart->setTitle("Répartition des événements");
 
-        // Cachez la légende
-        chart->legend()->hide();
 
-        // Créez le QChartView et définissez les rendus
+        chart->legend()->hide();
         QChartView *chartView = new QChartView(chart);
         chartView->setRenderHint(QPainter::Antialiasing);
-
-        // Créer un layout pour afficher le graphique
         QVBoxLayout *layout = new QVBoxLayout(ui->chartContainer);
         layout->addWidget(chartView);
-
-        // Mettre à jour l'affichage
         chartView->setVisible(true);
 
 
@@ -79,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {
+    if (arduino->isOpen()) {
+          arduino->close();
+      }
     delete ui;
 }
 
@@ -90,7 +93,7 @@ void MainWindow::on_addButton_clicked() {
     QString type = ui->typeLineEdit->currentText();
     int budget = ui->durationLineEdit->text().toInt();
     float price = ui->priceLineEdit->text().toFloat();
-
+    QString salle = ui->salleLineEdit->currentText();
     if (id <= 0) {
         QMessageBox::warning(this, "Donnez un entier" ,"positif pour l'id");
         return;
@@ -111,6 +114,7 @@ void MainWindow::on_addButton_clicked() {
     event.setType(type);
     event.setBudget(budget);
     event.setPrice(price);
+    event.setSalle(salle);
     if (event.checkRentabilite(price, capacity, budget)) {
         event.setRentabilite("gagnant");
     }
@@ -118,23 +122,25 @@ void MainWindow::on_addButton_clicked() {
         event.setRentabilite("perdant");
 
 
-
-    if (event.addEvent()) {
-        QMessageBox::information(this, "Success", "Event added successfully.");
-    } else {
-        QMessageBox::critical(this, "Error", "Failed to add the event. Check logs for details.");
+    if(event.verifSalle(date,salle))
+    {
+        if (event.addEvent()) {
+            QMessageBox::information(this, "Success", "Event added successfully.");
+        } else {
+            QMessageBox::critical(this, "Error", "Failed.");
+        }
     }
-
-    // Rafraîchir la table après l'ajout
+    else
+        QMessageBox::critical(this, "Error", "Cette salle est deja reservee pour cette date, Veuillez choisir une autre s'il vous plait.");
     on_refreshButton_clicked();
+
+
 }
 
 void MainWindow::on_refreshButton_clicked() {
 
     ui->eventTableWidget->clearContents();
     ui->eventTableWidget->setRowCount(0);
-
-    // Créer un objet Event et récupérer les données
     Event event;
     QSqlQueryModel* model = event.displayEvents();
 
@@ -157,21 +163,22 @@ void MainWindow::on_refreshButton_clicked() {
             if (col == 2) {
                 if (cellData.canConvert<QDate>()) {
                     QDate date = cellData.toDate();
-                    displayData = date.toString("dd/MM/yyyy"); // Formater uniquement la date
+                    displayData = date.toString("dd/MM/yyyy");
                 } else if (cellData.canConvert<QDateTime>()) {
                     QDateTime dateTime = cellData.toDateTime();
-                    displayData = dateTime.date().toString("dd/MM/yyyy"); // Extraire la date de QDateTime
+                    displayData = dateTime.date().toString("dd/MM/yyyy");
                 }
             } else {
-                displayData = cellData.toString(); // Pour les autres colonnes
+                displayData = cellData.toString();
             }
 
             ui->eventTableWidget->setItem(row, col, new QTableWidgetItem(displayData));
         }
     }
 
-    // Ajuster la taille des colonnes pour remplir l'espace
+
     ui->eventTableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    
 
     qDebug() << "Table des événements rafraîchie avec succès.";
 }
@@ -180,7 +187,7 @@ void MainWindow::on_refreshButton_clicked() {
 void MainWindow::on_modifyButton_clicked() {
     int id = ui->idLineEdit->text().toInt();
     QString name = ui->nameLineEdit->text();
-    QDate date = ui->dateLineEdit->date();  // Utilisation de date() pour obtenir un QDate
+    QDate date = ui->dateLineEdit->date();
     int capacity = ui->capacityLineEdit->text().toInt();
     QString type = ui->typeLineEdit->currentText();
     int budget = ui->durationLineEdit->text().toInt();
@@ -213,7 +220,6 @@ void MainWindow::on_modifyButton_clicked() {
         QMessageBox::critical(this, "Error", "Failed to modify the event. Check logs for details.");
     }
 
-    // Rafraîchir la table après modification
     on_refreshButton_clicked();
 }
 
@@ -233,8 +239,6 @@ void MainWindow::on_deleteButton_clicked() {
         QMessageBox::warning(this, "Invalid ID", "Please select a valid event to delete.");
         return;
     }
-
-    // Créer un objet Event et appeler la méthode deleteEvent()
     Event event;
     bool success = event.deleteEvent(id);  // Supposons que cette méthode gère la requête SQL et renvoie true si réussi
 
@@ -319,19 +323,19 @@ void MainWindow::on_eventTableWidget_cellDoubleClicked(int row, int column)
         ui->eventTableWidget->setColumnCount(columnCount);
         for (int row = 0; row < rowCount; ++row) {
             for (int col = 0; col < columnCount; ++col) {
-                QVariant cellData = model->data(model->index(row, col)); // Obtenir la donnée directement
+                QVariant cellData = model->data(model->index(row, col));
 
                 QString displayData;
                 if (col == 2) {
                     if (cellData.canConvert<QDate>()) {
                         QDate date = cellData.toDate();
-                        displayData = date.toString("dd/MM/yyyy"); // Formater uniquement la date
+                        displayData = date.toString("dd/MM/yyyy");
                     } else if (cellData.canConvert<QDateTime>()) {
                         QDateTime dateTime = cellData.toDateTime();
-                        displayData = dateTime.date().toString("dd/MM/yyyy"); // Extraire la date de QDateTime
+                        displayData = dateTime.date().toString("dd/MM/yyyy");
                     }
                 } else {
-                    displayData = cellData.toString(); // Pour les autres colonnes
+                    displayData = cellData.toString();
                 }
 
                 ui->eventTableWidget->setItem(row, col, new QTableWidgetItem(displayData));
@@ -341,5 +345,64 @@ void MainWindow::on_eventTableWidget_cellDoubleClicked(int row, int column)
 
         qDebug() << "Table des événements rafraîchie avec succès.";
 
+    }
+}
+
+void MainWindow::on_exportPdfButton_clicked()
+{
+
+}
+QString serialBuffer;  // Tampon pour assembler les données série
+
+void MainWindow::readArduinoData() {
+    QByteArray data = arduino->readAll();  // Lire les données disponibles
+    serialBuffer += QString(data);         // Ajouter les données reçues au tampon
+
+    // Traiter les lignes complètes (séparées par '\n')
+    while (serialBuffer.contains("\n")) {
+        int index = serialBuffer.indexOf("\n");  // Trouver la fin d'une ligne
+        QString completeLine = serialBuffer.left(index).trimmed();  // Extraire la ligne complète
+        serialBuffer.remove(0, index + 1);  // Supprimer la ligne traitée du tampon
+
+        // Maintenant, nous avons une ligne complète
+        qDebug() << "Données complètes Arduino reçues :" << completeLine;
+
+        // Vérifier le contenu pour le traitement
+        if (completeLine.contains("GAS_DETECTED")) {
+            QMessageBox::critical(this, "Alerte Gaz", "Présence de gaz détectée !");
+        } else if (completeLine.contains("SAFE")) {
+            QMessageBox::information(this, "Statut", "Environnement sécurisé.");
+        } else if (completeLine.startsWith("Valeur de fumée")) {
+            qDebug() << "Niveau de fumée détecté :" << completeLine.split(":").last().trimmed();
+        }
+    }
+}
+void MainWindow::connectToArduino() {
+    // Détection des ports série disponibles
+    foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
+        if (portInfo.description().contains("Arduino")) {  // Filtrer les ports détectant Arduino
+            arduinoPortName = portInfo.portName();
+            break;
+        }
+    }
+
+    if (arduinoPortName.isEmpty()) {
+        QMessageBox::warning(this, "Arduino non trouvé", "Aucun appareil Arduino détecté.");
+        return;
+    }
+
+    // Configuration de la connexion série
+    arduino->setPortName(arduinoPortName);
+    arduino->setBaudRate(QSerialPort::Baud9600);
+    arduino->setDataBits(QSerialPort::Data8);
+    arduino->setParity(QSerialPort::NoParity);
+    arduino->setStopBits(QSerialPort::OneStop);
+    arduino->setFlowControl(QSerialPort::NoFlowControl);
+
+    if (arduino->open(QIODevice::ReadOnly)) {
+        connect(arduino, &QSerialPort::readyRead, this, &MainWindow::readArduinoData);
+        qDebug() << "Arduino connecté sur le port :" << arduinoPortName;
+    } else {
+        QMessageBox::critical(this, "Erreur de connexion", "Impossible d'ouvrir le port série.");
     }
 }

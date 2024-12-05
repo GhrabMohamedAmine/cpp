@@ -9,7 +9,7 @@
 class Event {
 public:
     Event();
-    Event(int id, QString name, QDate date, int capacity, QString type, int budget, float price, QString rentabilite);
+    Event(int id, QString name, QDate date, int capacity, QString type, int budget, float price, QString rentabilite,QString danger,QString salle);
 
     bool addEvent();
     QSqlQueryModel* displayEvents();
@@ -34,11 +34,13 @@ public:
 
     int getBugdet() const;
     void setBudget(const int &budget);
-
+    bool verifSalle(QDate date,QString salle);
     float getPrice() const;
     void setPrice(float price);
     QString getRentabilite() const;
     void setRentabilite(const QString &rentabilite);
+    QString getSalle() const;
+    void setSalle(const QString &salle);
 
 private:
     int id_event;
@@ -49,6 +51,8 @@ private:
     int budget;
     int price;
     QString rentabilite;
+    QString danger;
+    QString salle;
 };
 
 #endif // EVENT_H

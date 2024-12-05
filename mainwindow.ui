@@ -311,7 +311,7 @@ color:white;</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -617,6 +617,14 @@ color:white;</string>
           <set>AlignHCenter|AlignTop</set>
          </property>
         </column>
+        <column>
+         <property name="text">
+          <string>danger</string>
+         </property>
+         <property name="textAlignment">
+          <set>AlignCenter</set>
+         </property>
+        </column>
        </widget>
        <widget class="QPushButton" name="refreshButton">
         <property name="geometry">
@@ -735,7 +743,7 @@ background-color:#030C54;
 color:white</string>
         </property>
         <property name="text">
-         <string>Exporter PDF</string>
+         <string>Detecter le gaz</string>
         </property>
        </widget>
       </widget>
@@ -743,7 +751,7 @@ color:white</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>530</y>
+         <y>620</y>
          <width>131</width>
          <height>41</height>
         </rect>
@@ -773,7 +781,7 @@ color:white</string>
        <property name="geometry">
         <rect>
          <x>160</x>
-         <y>530</y>
+         <y>620</y>
          <width>131</width>
          <height>41</height>
         </rect>
@@ -937,6 +945,61 @@ color:white</string>
         </property>
        </item>
       </widget>
+      <widget class="QLabel" name="label_21">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>530</y>
+         <width>151</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Perpetua</family>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <italic>true</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color:#030C54</string>
+       </property>
+       <property name="text">
+        <string>salle:</string>
+       </property>
+      </widget>
+      <widget class="QComboBox" name="salleLineEdit">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>520</y>
+         <width>131</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>Salle 1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Salle 2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Salle 3</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Salle 4</string>
+        </property>
+       </item>
+      </widget>
       <zorder>groupBox_5</zorder>
       <zorder>statusLabel_2</zorder>
       <zorder>capacityLineEdit</zorder>
@@ -955,6 +1018,8 @@ color:white</string>
       <zorder>priceLineEdit</zorder>
       <zorder>dateLineEdit</zorder>
       <zorder>typeLineEdit</zorder>
+      <zorder>label_21</zorder>
+      <zorder>salleLineEdit</zorder>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">

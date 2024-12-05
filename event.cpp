@@ -3,15 +3,16 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QMessageBox>
+
 Event::Event() {}
 
-Event::Event(int id, QString name, QDate date, int capacity, QString type, int budget, float price,QString rentabilite)
-: id_event(id), name(name), date_event(date), capacity(capacity), type(type), budget(budget), price(price), rentabilite(rentabilite) {}
+Event::Event(int id, QString name, QDate date, int capacity, QString type, int budget, float price,QString rentabilite,QString danger,QString salle)
+: id_event(id), name(name), date_event(date), capacity(capacity), type(type), budget(budget), price(price), rentabilite(rentabilite),danger(danger),salle(salle) {}
 
 bool Event::addEvent() {
 QSqlQuery query;
-query.prepare("INSERT INTO EVENTS (ID_EVENT, NAME, DATE_EVENT, CAPACITY, TYPE, BUDGET, PRICE, RENTABILITE) "
-          "VALUES (:id, :name, :date, :capacity, :type, :budget, :price, :rentabilite)");
+query.prepare("INSERT INTO EVENTS (ID_EVENT, NAME, DATE_EVENT, CAPACITY, TYPE, BUDGET, PRICE, RENTABILITE,DANGER,SALLE) "
+          "VALUES (:id, :name, :date, :capacity, :type, :budget, :price, :rentabilite, :danger, :salle)");
 query.bindValue(":id", id_event);
 query.bindValue(":name", name);
 query.bindValue(":date", date_event);
@@ -20,6 +21,8 @@ query.bindValue(":type", type);
 query.bindValue(":budget", budget);
 query.bindValue(":price", price);
 query.bindValue(":rentabilite", rentabilite);
+query.bindValue(":danger","pas encore testee");
+query.bindValue(":salle", salle);
 
 
 if (query.exec()) {
@@ -30,6 +33,28 @@ qDebug() << "Erreur lors de l'ajout de l'événement:" << query.lastError().text
 return false;
 }
 }
+
+bool Event::verifSalle(QDate date,QString salle)
+{
+    QSqlQueryModel* model = new QSqlQueryModel();
+
+       QSqlQuery query;
+       query.prepare("SELECT * FROM EVENTS WHERE DATE_EVENT = :date");
+       query.bindValue(":date", date);
+       if (query.exec()) {
+           model->setQuery(query);
+       } else {
+           qDebug() << "Erreur lors de la recherche de l'événement:" << query.lastError().text();
+           return false;
+       }
+       for (int row = 0; row < model->rowCount(); ++row) {
+           QVariant salleEvent = model->data(model->index(row, 9));
+           if (salleEvent.toString() == salle) {
+               return false;
+           }
+       }
+       return true;
+}
 bool Event::modifyEvent(int id) {
 QSqlQuery query;
 query.prepare("UPDATE EVENTS SET NAME = :name, DATE_EVENT = :date, CAPACITY = :capacity, "
@@ -37,7 +62,7 @@ query.prepare("UPDATE EVENTS SET NAME = :name, DATE_EVENT = :date, CAPACITY = :c
 query.bindValue(":id", id);
 query.bindValue(":name", name);
 query.bindValue(":date", date_event);
-query.bindValue(":capacity", capacity);  // Capacité de l'événement
+query.bindValue(":capacity", capacity);
 query.bindValue(":type", type);  // Type de l'événement
 query.bindValue(":budget", budget);  // Durée de l'événement
 query.bindValue(":price", price);  // Prix de l'événement
@@ -188,4 +213,8 @@ QString Event::getRentabilite() const { return rentabilite; }
 void Event::setRentabilite(const QString &rentabilite) {
 this->rentabilite = rentabilite;
 }
+void Event::setSalle(const QString &salle) {
+    this->salle = salle;
+}
+
 
