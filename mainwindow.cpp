@@ -20,16 +20,20 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
         ui->setupUi(this);
-        arduino = new QSerialPort(this);
-           connectToArduino();
 
-         qDebug() << "Nombre de port"<<QSerialPortInfo::availablePorts().length();
-         foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
-             qDebug() << "Port Name: " << portInfo.portName();
-             qDebug() << "Description: " << portInfo.description();
-             qDebug() << "Manufacturer: " << portInfo.manufacturer();
-             qDebug() << "System Location: " << portInfo.systemLocation();
-         }
+        arduino = new QSerialPort(this);
+                connectToArduino();  // Connexion à l'Arduino
+                connect(ui->gazDetect, &QPushButton::clicked, this, &MainWindow::on_gazDetect_clicked);  // Connexion du signal du bouton
+
+                // Logique pour la détection des ports série
+                qDebug() << "Nombre de ports:" << QSerialPortInfo::availablePorts().length();
+                foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
+                    qDebug() << "Nom du port:" << portInfo.portName();
+                    qDebug() << "Description:" << portInfo.description();
+                    qDebug() << "Fabricant:" << portInfo.manufacturer();
+                    qDebug() << "Emplacement système:" << portInfo.systemLocation();
+                }
+
         connect(ui->eventTableWidget, &QTableWidget::cellClicked, this, &MainWindow::on_eventTableWidget_cellClicked);
         Connection connection;
         if (!connection.createconnect()) {
@@ -39,37 +43,41 @@ MainWindow::MainWindow(QWidget *parent)
         QPieSeries *series = new QPieSeries();
         Event event;
         QVector<int> percents = Event::getPercent();
-        series->append("PRIVE", percents[1] * 100 / percents[0]);
-        series->append("PROFESSIONNEL", percents[2] * 100 / percents[0]);
-        series->append("SAISIONNIER", percents[3] * 100 / percents[0]);
-        series->append("CULTUREL", percents[4] * 100 / percents[0]);
-        series->append("SPORTIF", percents[5] * 100 / percents[0]);
+        if (percents[0]!=0)
+        {
+            series->append("PRIVE", percents[1] * 100 / percents[0]);
+            series->append("PROFESSIONNEL", percents[2] * 100 / percents[0]);
+            series->append("SAISIONNIER", percents[3] * 100 / percents[0]);
+            series->append("CULTUREL", percents[4] * 100 / percents[0]);
+            series->append("SPORTIF", percents[5] * 100 / percents[0]);
 
-        // Personnaliser les couleurs des sections
-        series->slices().at(0)->setBrush(QColor(255, 99, 132));  // PRIVE (rose)
-        series->slices().at(1)->setBrush(QColor(54, 162, 235)); // PRO (bleu)
-        series->slices().at(2)->setBrush(QColor(75, 192, 192)); // SPORT (vert)
-        series->slices().at(3)->setBrush(QColor(153, 102, 255)); // CULTUREL (violet)
-        series->slices().at(4)->setBrush(QColor(255, 159, 64)); // AUTRE SPORT (orange)
-        for (int i = 0; i < series->slices().count(); ++i) {
-            QPieSlice *slice = series->slices().at(i);
-            QString name = slice->label();  // Nom du secteur (ex: "PRIVE", "PRO", etc.)
-            double percentage = slice->percentage() * 100;  // Calcul du pourcentage
-            slice->setLabel(QString("%1: %2%").arg(name).arg(percentage, 0, 'f', 1));  // Nom + Pourcentage
-            slice->setLabelVisible(true);  // Rendre les labels visibles
+            // Personnaliser les couleurs des sections
+            series->slices().at(0)->setBrush(QColor(255, 99, 132));  // PRIVE (rose)
+            series->slices().at(1)->setBrush(QColor(54, 162, 235)); // PRO (bleu)
+            series->slices().at(2)->setBrush(QColor(75, 192, 192)); // SPORT (vert)
+            series->slices().at(3)->setBrush(QColor(153, 102, 255)); // CULTUREL (violet)
+            series->slices().at(4)->setBrush(QColor(255, 159, 64)); // AUTRE SPORT (orange)
+            for (int i = 0; i < series->slices().count(); ++i) {
+                QPieSlice *slice = series->slices().at(i);
+                QString name = slice->label();  // Nom du secteur (ex: "PRIVE", "PRO", etc.)
+                double percentage = slice->percentage() * 100;  // Calcul du pourcentage
+                slice->setLabel(QString("%1: %2%").arg(name).arg(percentage, 0, 'f', 1));  // Nom + Pourcentage
+                slice->setLabelVisible(true);  // Rendre les labels visibles
+            }
+
+            QChart *chart = new QChart();
+            chart->addSeries(series);
+            chart->setTitle("Répartition des événements");
+
+
+            chart->legend()->hide();
+            QChartView *chartView = new QChartView(chart);
+            chartView->setRenderHint(QPainter::Antialiasing);
+            QVBoxLayout *layout = new QVBoxLayout(ui->chartContainer);
+            layout->addWidget(chartView);
+            chartView->setVisible(true);
         }
 
-        QChart *chart = new QChart();
-        chart->addSeries(series);
-        chart->setTitle("Répartition des événements");
-
-
-        chart->legend()->hide();
-        QChartView *chartView = new QChartView(chart);
-        chartView->setRenderHint(QPainter::Antialiasing);
-        QVBoxLayout *layout = new QVBoxLayout(ui->chartContainer);
-        layout->addWidget(chartView);
-        chartView->setVisible(true);
 
 
 
@@ -82,6 +90,8 @@ MainWindow::~MainWindow() {
     if (arduino->isOpen()) {
           arduino->close();
       }
+    connect(ui->gazDetect, &QPushButton::pressed, this, &MainWindow::on_gazDetect_pressed);
+
     delete ui;
 }
 
@@ -348,39 +358,33 @@ void MainWindow::on_eventTableWidget_cellDoubleClicked(int row, int column)
     }
 }
 
-void MainWindow::on_exportPdfButton_clicked()
-{
 
-}
 QString serialBuffer;  // Tampon pour assembler les données série
 
 void MainWindow::readArduinoData() {
-    QByteArray data = arduino->readAll();  // Lire les données disponibles
-    serialBuffer += QString(data);         // Ajouter les données reçues au tampon
+    QByteArray data = arduino->readAll();  // Lire les données reçues de l'Arduino
+    serialBuffer += QString(data);  // Ajouter les données au tampon
 
-    // Traiter les lignes complètes (séparées par '\n')
+    // Vérification et traitement des données reçues
     while (serialBuffer.contains("\n")) {
         int index = serialBuffer.indexOf("\n");  // Trouver la fin d'une ligne
         QString completeLine = serialBuffer.left(index).trimmed();  // Extraire la ligne complète
-        serialBuffer.remove(0, index + 1);  // Supprimer la ligne traitée du tampon
+        serialBuffer.remove(0, index + 1);  // Retirer la ligne traitée du tampon
 
-        // Maintenant, nous avons une ligne complète
+        // Afficher la valeur reçue
         qDebug() << "Données complètes Arduino reçues :" << completeLine;
-
-        // Vérifier le contenu pour le traitement
-        if (completeLine.contains("GAS_DETECTED")) {
-            QMessageBox::critical(this, "Alerte Gaz", "Présence de gaz détectée !");
-        } else if (completeLine.contains("SAFE")) {
-            QMessageBox::information(this, "Statut", "Environnement sécurisé.");
-        } else if (completeLine.startsWith("Valeur de fumée")) {
-            qDebug() << "Niveau de fumée détecté :" << completeLine.split(":").last().trimmed();
+        // Si les données reçues sont un nombre (ex: valeur du gaz)
+        bool ok;
+        int gazValue = completeLine.toInt(&ok);  // Convertir la ligne en entier
+        if (ok) {
+             gazValueString = QString::number(gazValue);  // Stocker la valeur du gaz sous forme de chaîne
         }
     }
 }
 void MainWindow::connectToArduino() {
     // Détection des ports série disponibles
     foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
-        if (portInfo.description().contains("Arduino")) {  // Filtrer les ports détectant Arduino
+        if (portInfo.description().contains("Arduino")) {
             arduinoPortName = portInfo.portName();
             break;
         }
@@ -391,7 +395,6 @@ void MainWindow::connectToArduino() {
         return;
     }
 
-    // Configuration de la connexion série
     arduino->setPortName(arduinoPortName);
     arduino->setBaudRate(QSerialPort::Baud9600);
     arduino->setDataBits(QSerialPort::Data8);
@@ -400,9 +403,29 @@ void MainWindow::connectToArduino() {
     arduino->setFlowControl(QSerialPort::NoFlowControl);
 
     if (arduino->open(QIODevice::ReadOnly)) {
-        connect(arduino, &QSerialPort::readyRead, this, &MainWindow::readArduinoData);
+        connect(arduino, &QSerialPort::readyRead, this, &MainWindow::readArduinoData);  // Connexion pour lire les données
         qDebug() << "Arduino connecté sur le port :" << arduinoPortName;
     } else {
         QMessageBox::critical(this, "Erreur de connexion", "Impossible d'ouvrir le port série.");
     }
 }
+
+    void MainWindow::on_gazDetect_pressed() {
+
+
+    }
+
+    void MainWindow::on_gazDetect_clicked() {
+        if (! gazValueString.isEmpty()) {
+            Event event;
+            int id = ui->idRecherche->text().toInt();
+            if(bool success = event.verifGaz(gazValueString.toInt(),id))
+                QMessageBox::warning(this, "ça marche", "bien.");
+
+            else
+                QMessageBox::warning(this, "Erreur", "Aucune donnée de gaz reçue.");
+
+        } else {
+            QMessageBox::warning(this, "Erreur", "Aucune donnée de gaz reçue.");
+        }
+    }

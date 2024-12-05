@@ -37,10 +37,15 @@ private slots:
 
     void on_exportPdfButton_clicked();
 
+    void on_gazDetect_pressed();
+
+    void on_gazDetect_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *arduino;
     QString arduinoPortName;
+    QString gazValueString;
     void connectToArduino();    // Méthode pour initialiser la connexion Arduino
 
 };

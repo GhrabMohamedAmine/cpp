@@ -25,7 +25,7 @@ public:
     static QVector<int> getPercent();
     QDate getDate() const;
     void setDate(const QDate &date);
-
+    bool verifGaz(int gaz,int id);
     int getCapacity() const;
     void setCapacity(int capacity);
 

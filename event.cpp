@@ -33,6 +33,48 @@ qDebug() << "Erreur lors de l'ajout de l'événement:" << query.lastError().text
 return false;
 }
 }
+bool Event::verifGaz(int gaz, int id)
+{
+    // Vérification de la connexion à la base de données
+    if (!QSqlDatabase::database().isOpen()) {
+        qDebug() << "La base de données n'est pas ouverte.";
+        return false;
+    }
+
+    // Vérification si l'ID existe dans la table EVENTS
+    QSqlQuery checkQuery;
+    checkQuery.prepare("SELECT COUNT(*) FROM EVENTS WHERE ID_EVENT = :id");
+    checkQuery.bindValue(":id", id);
+    if (!checkQuery.exec()) {
+        qDebug() << "Erreur de vérification de l'ID:" << checkQuery.lastError().text();
+        return false;
+    }
+
+
+
+    // Préparation de la requête de mise à jour
+    QSqlQuery query;
+    if (gaz > 500) {
+        query.prepare("UPDATE EVENTS SET DANGER = :danger WHERE ID_EVENT = :id");
+        query.bindValue(":id", id);
+        query.bindValue(":danger", "Danger critique");
+    } else {
+        query.prepare("UPDATE EVENTS SET DANGER = :danger WHERE ID_EVENT = :id");
+        query.bindValue(":id", id);
+        query.bindValue(":danger", " pas danger ");
+    }
+
+    qDebug() << "Requête SQL : " << query.lastQuery();  // Affichage de la requête pour vérification
+
+    if (query.exec()) {
+        qDebug() << "Événement mis à jour avec succès.";
+        return true;
+    } else {
+        qDebug() << "Erreur lors de la mise à jour de l'événement:" << query.lastError().text();
+        return false;
+    }
+}
+
 
 bool Event::verifSalle(QDate date,QString salle)
 {
@@ -181,7 +223,7 @@ QVector<int> Event::getPercent()
 
 bool Event::checkRentabilite(int prix,int nbrPlace,int budget)
 {
-if(prix*nbrPlace<budget)
+if(prix*nbrPlace>budget)
 return true;
 else
 return false;

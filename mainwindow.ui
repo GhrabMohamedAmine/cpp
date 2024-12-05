@@ -716,7 +716,7 @@ color:white</string>
          <string>Chercher</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="exportPdfButton">
+       <widget class="QPushButton" name="gazDetect">
         <property name="geometry">
          <rect>
           <x>420</x>
