@@ -8,8 +8,8 @@ bool Connection::createconnect() {
     bool test = false;
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC");
-    db.setDatabaseName("Driver={Oracle in instantclient12_2};Dbq=localhost:1521/XE;Uid=oussama;Pwd=oussama;");
-   // db.setDatabaseName("Driver={Oracle in instantclient12_2};Dbq=localhost:1521/XE;Uid=amine;Pwd=esprit;");
+    //db.setDatabaseName("Driver={Oracle in instantclient12_2};Dbq=localhost:1521/XE;Uid=oussama;Pwd=oussama;");
+    db.setDatabaseName("Driver={Oracle in instantclient12_2};Dbq=localhost:1521/XE;Uid=amine;Pwd=esprit;");
 
 
     qDebug() << "Tentative de connexion à la base de données...";

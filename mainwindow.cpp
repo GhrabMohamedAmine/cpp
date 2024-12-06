@@ -158,13 +158,10 @@ void MainWindow::on_refreshButton_clicked() {
         qDebug() << "Erreur : le modèle retourné par displayEvents() est null.";
         return;
     }
-
-    // Récupérer les données du modèle et les insérer dans le QTableWidget
     int rowCount = model->rowCount();
     int columnCount = model->columnCount();
     ui->eventTableWidget->setRowCount(rowCount);
     ui->eventTableWidget->setColumnCount(columnCount);
-
     for (int row = 0; row < rowCount; ++row) {
         for (int col = 0; col < columnCount; ++col) {
             QVariant cellData = model->data(model->index(row, col)); // Obtenir la donnée directement
@@ -316,7 +313,7 @@ void MainWindow::on_eventTableWidget_cellClicked(int row, int column)
 void MainWindow::on_eventTableWidget_cellDoubleClicked(int row, int column)
 {
     qDebug() << row,column;
-    if(row == 0)
+    if(row == 1)
     {
         ui->eventTableWidget->clearContents();
         ui->eventTableWidget->setRowCount(0);
@@ -422,10 +419,13 @@ void MainWindow::connectToArduino() {
             if(bool success = event.verifGaz(gazValueString.toInt(),id))
                 QMessageBox::warning(this, "ça marche", "bien.");
 
+
             else
                 QMessageBox::warning(this, "Erreur", "Aucune donnée de gaz reçue.");
 
         } else {
             QMessageBox::warning(this, "Erreur", "Aucune donnée de gaz reçue.");
         }
+        on_refreshButton_clicked();
+
     }

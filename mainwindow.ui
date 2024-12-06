@@ -27,7 +27,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../../Desktop/LUXORAHOTEL/image/home1.jpg</pixmap>
+     <pixmap>../LUXORAHOTEL/image/home1.jpg</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>
@@ -46,7 +46,6 @@
      <font>
       <family>Perpetua</family>
       <pointsize>48</pointsize>
-      <weight>75</weight>
       <italic>true</italic>
       <bold>true</bold>
       <underline>true</underline>
@@ -84,7 +83,6 @@
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -114,7 +112,6 @@ color:white</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -144,7 +141,6 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -174,7 +170,6 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -204,7 +199,6 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -234,7 +228,6 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -264,7 +257,6 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -330,7 +322,6 @@ color:white;</string>
        <font>
         <family>Perpetua</family>
         <pointsize>20</pointsize>
-        <weight>75</weight>
         <italic>true</italic>
         <bold>true</bold>
         <underline>true</underline>
@@ -355,7 +346,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -380,7 +370,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -405,7 +394,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -430,7 +418,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -455,7 +442,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -500,7 +486,6 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
          <underline>true</underline>
@@ -522,7 +507,6 @@ color:white;</string>
          <font>
           <family>Perpetua</family>
           <pointsize>12</pointsize>
-          <weight>75</weight>
           <italic>true</italic>
           <bold>true</bold>
          </font>
@@ -549,64 +533,43 @@ color:white;</string>
          <rect>
           <x>10</x>
           <y>130</y>
-          <width>1401</width>
-          <height>671</height>
+          <width>1131</width>
+          <height>631</height>
          </rect>
         </property>
         <column>
          <property name="text">
           <string>ID</string>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
         </column>
         <column>
          <property name="text">
           <string>nom</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
          </property>
         </column>
         <column>
          <property name="text">
           <string>date</string>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
         </column>
         <column>
          <property name="text">
           <string>capacite</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
          </property>
         </column>
         <column>
          <property name="text">
           <string>type</string>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
         </column>
         <column>
          <property name="text">
           <string>budget</string>
          </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
-         </property>
         </column>
         <column>
          <property name="text">
           <string>prix</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -620,9 +583,6 @@ color:white;</string>
         <column>
          <property name="text">
           <string>danger</string>
-         </property>
-         <property name="textAlignment">
-          <set>AlignCenter</set>
          </property>
         </column>
        </widget>
@@ -639,7 +599,6 @@ color:white;</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -669,7 +628,6 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -699,7 +657,6 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -729,7 +686,6 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -760,7 +716,6 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>10</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -790,7 +745,6 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>10</pointsize>
-         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -820,7 +774,6 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -875,7 +828,6 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -958,7 +910,6 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
-         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
