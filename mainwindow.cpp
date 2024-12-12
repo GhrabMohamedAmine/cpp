@@ -40,43 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
             QMessageBox::critical(this, "Erreur de connexion", "La connexion à la base de données a échoué.");
             return;
         }
-        QPieSeries *series = new QPieSeries();
-        Event event;
-        QVector<int> percents = Event::getPercent();
-        if (percents[0]!=0)
-        {
-            series->append("PRIVE", percents[1] * 100 / percents[0]);
-            series->append("PROFESSIONNEL", percents[2] * 100 / percents[0]);
-            series->append("SAISIONNIER", percents[3] * 100 / percents[0]);
-            series->append("CULTUREL", percents[4] * 100 / percents[0]);
-            series->append("SPORTIF", percents[5] * 100 / percents[0]);
-
-            // Personnaliser les couleurs des sections
-            series->slices().at(0)->setBrush(QColor(255, 99, 132));  // PRIVE (rose)
-            series->slices().at(1)->setBrush(QColor(54, 162, 235)); // PRO (bleu)
-            series->slices().at(2)->setBrush(QColor(75, 192, 192)); // SPORT (vert)
-            series->slices().at(3)->setBrush(QColor(153, 102, 255)); // CULTUREL (violet)
-            series->slices().at(4)->setBrush(QColor(255, 159, 64)); // AUTRE SPORT (orange)
-            for (int i = 0; i < series->slices().count(); ++i) {
-                QPieSlice *slice = series->slices().at(i);
-                QString name = slice->label();  // Nom du secteur (ex: "PRIVE", "PRO", etc.)
-                double percentage = slice->percentage() * 100;  // Calcul du pourcentage
-                slice->setLabel(QString("%1: %2%").arg(name).arg(percentage, 0, 'f', 1));  // Nom + Pourcentage
-                slice->setLabelVisible(true);  // Rendre les labels visibles
-            }
-
-            QChart *chart = new QChart();
-            chart->addSeries(series);
-            chart->setTitle("Répartition des événements");
-
-
-            chart->legend()->hide();
-            QChartView *chartView = new QChartView(chart);
-            chartView->setRenderHint(QPainter::Antialiasing);
-            QVBoxLayout *layout = new QVBoxLayout(ui->chartContainer);
-            layout->addWidget(chartView);
-            chartView->setVisible(true);
-        }
 
 
 
@@ -94,6 +57,76 @@ MainWindow::~MainWindow() {
 
     delete ui;
 }
+void MainWindow::updateStatisticsChart() {
+    // Vérifier si chartContainer possède un layout, sinon en créer un
+    QLayout *existingLayout = ui->chartContainer->layout();
+    if (existingLayout) {
+        // Supprimer tous les widgets existants dans le layout
+        QLayoutItem *item;
+        while ((item = existingLayout->takeAt(0)) != nullptr) {
+            if (item->widget()) {
+                item->widget()->deleteLater();  // Libérer les widgets
+            }
+            delete item;  // Libérer l'élément de mise en page
+        }
+    } else {
+        // Si aucun layout n'existe, en créer un
+        ui->chartContainer->setLayout(new QVBoxLayout());
+    }
+
+    // Création de la connexion à la base de données
+    Connection connection;
+    if (!connection.createconnect()) {
+        QMessageBox::critical(this, "Erreur de connexion", "La connexion à la base de données a échoué.");
+        return;
+    }
+
+    // Récupération des statistiques via l'objet Event
+    Event event;
+    QVector<int> percents = Event::getPercent();
+
+    if (percents.isEmpty() || percents[0] == 0) {
+        QMessageBox::information(this, "Statistiques", "Aucune donnée disponible pour les statistiques.");
+        return;
+    }
+
+    // Création de la série de données pour le graphique
+    QPieSeries *series = new QPieSeries();
+    series->append("PRIVE", percents[1] * 100 / percents[0]);
+    series->append("PROFESSIONNEL", percents[2] * 100 / percents[0]);
+    series->append("SAISIONNIER", percents[3] * 100 / percents[0]);
+    series->append("CULTUREL", percents[4] * 100 / percents[0]);
+    series->append("SPORTIF", percents[5] * 100 / percents[0]);
+
+    // Personnaliser les couleurs et les labels des tranches
+    series->slices().at(0)->setBrush(QColor(255, 99, 132));  // PRIVE (rose)
+    series->slices().at(1)->setBrush(QColor(54, 162, 235));  // PRO (bleu)
+    series->slices().at(2)->setBrush(QColor(75, 192, 192));  // SAISONNIER (vert)
+    series->slices().at(3)->setBrush(QColor(153, 102, 255)); // CULTUREL (violet)
+    series->slices().at(4)->setBrush(QColor(255, 159, 64));  // SPORTIF (orange)
+
+    for (int i = 0; i < series->slices().count(); ++i) {
+        QPieSlice *slice = series->slices().at(i);
+        QString name = series->slices().at(i)->label(); // Nom de la tranche
+        double percentage = slice->percentage() * 100;  // Calcul du pourcentage
+        slice->setLabel(QString("%1: %2%").arg(name).arg(percentage, 0, 'f', 1));  // Nom + Pourcentage
+        slice->setLabelVisible(true);
+    }
+
+    // Création et configuration du graphique
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("Répartition des événements");
+    chart->legend()->hide();
+
+    // Création de la vue du graphique
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    // Ajouter le graphique au conteneur
+    ui->chartContainer->layout()->addWidget(chartView);
+}
+
 
 void MainWindow::on_addButton_clicked() {
     int id = ui->idLineEdit->text().toInt();
@@ -188,6 +221,8 @@ void MainWindow::on_refreshButton_clicked() {
     
 
     qDebug() << "Table des événements rafraîchie avec succès.";
+    updateStatisticsChart();
+
 }
 
 
@@ -313,7 +348,7 @@ void MainWindow::on_eventTableWidget_cellClicked(int row, int column)
 void MainWindow::on_eventTableWidget_cellDoubleClicked(int row, int column)
 {
     qDebug() << row,column;
-    if(row == 1)
+    if(row == 2)
     {
         ui->eventTableWidget->clearContents();
         ui->eventTableWidget->setRowCount(0);
@@ -429,3 +464,145 @@ void MainWindow::connectToArduino() {
         on_refreshButton_clicked();
 
     }
+    void MainWindow::exportToPdf()
+    {
+        // Ouvre une boîte de dialogue pour choisir l'emplacement et le nom du fichier PDF
+        QString filePath = QFileDialog::getSaveFileName(
+            this, "Save Event Data as PDF", "", "PDF Files (*.pdf)");
+
+        // Si un chemin de fichier valide est sélectionné
+        if (!filePath.isEmpty()) {
+            // Ajouter l'extension .pdf si elle n'est pas présente
+            if (!filePath.endsWith(".pdf")) {
+                filePath += ".pdf";
+            }
+
+            Event event;
+            QSqlQueryModel* model = event.displayEvents();
+
+            if (model == nullptr) {
+                QMessageBox::critical(this, "Erreur", "Erreur lors de la récupération des données.");
+                return;
+            }
+
+            QVector<Event> events;
+            for (int row = 0; row < model->rowCount(); ++row) {
+                Event event;
+                event.setId(model->data(model->index(row, 0)).toInt());
+                event.setName(model->data(model->index(row, 1)).toString());
+                event.setDate(model->data(model->index(row, 2)).toDate());
+                event.setType(model->data(model->index(row, 4)).toString());
+                event.setPrice(model->data(model->index(row, 6)).toInt());
+                event.setSalle(model->data(model->index(row, 9)).toString());
+                event.setBudget(model->data(model->index(row, 5)).toInt());
+                event.setCapacity(model->data(model->index(row, 3)).toInt());
+                event.setRentabilite(model->data(model->index(row, 7)).toString());
+                event.setDanger(model->data(model->index(row, 8)).toString());
+
+                events.append(event);
+            }
+
+            QFont font("Arial", 8); // Police légèrement agrandie
+            QPdfWriter pdfWriter(filePath);
+            pdfWriter.setPageSize(QPageSize(QPageSize::A3));
+            pdfWriter.setTitle("Export Events");
+            pdfWriter.setCreator("Event Management System");
+
+            QPainter painter;
+            if (!painter.begin(&pdfWriter)) {
+                QMessageBox::critical(this, "Erreur", "Impossible de créer le fichier PDF.");
+                return;
+            }
+
+            painter.setFont(font);
+            QPen pen;
+            pen.setColor(Qt::black);
+            pen.setWidth(3);                   // Épaisseur des traits (ajustable)
+             painter.setPen(pen);
+
+            int margin = 100;        // Marge autour du tableau
+            int y = margin;          // Position verticale initiale
+            int rowHeight = 1000;    // Hauteur de chaque ligne
+            int headerHeight = 1000; // Hauteur des en-têtes
+            int columnWidth = 1200;  // Largeur des colonnes
+            int textMargin = 200;    // Marge intérieure pour le texte
+
+
+
+            // Dessiner les en-têtes du tableau
+            QStringList headers = {
+                "ID", "Nom", "Date", "Capacite", "Type", "Budget",
+                "Prix", "Rentabilite", "Danger", "Salle"
+            };
+
+            for (int i = 0; i < headers.size(); ++i) {
+                painter.drawRect(margin + i * columnWidth, y, columnWidth, headerHeight);
+                painter.drawText(
+                    margin + i * columnWidth + textMargin,
+                    y + headerHeight / 2 + painter.fontMetrics().ascent() / 2,
+                    headers[i]
+                );
+            }
+
+            y += headerHeight;
+
+            // Dessiner les données
+            for (const Event& event : events) {
+                QStringList data = {
+                    QString::number(event.getId()),
+                    event.getName(),
+                    event.getDate().toString("yyyy-MM-dd"),
+                    QString::number(event.getCapacity()),
+                    event.getType(),
+                    QString::number(event.getBugdet()),
+                    QString::number(event.getPrice()),
+                    event.getRentabilite(),
+                    event.getDanger(),
+                    event.getSalle()
+                };
+
+                for (int i = 0; i < data.size(); ++i) {
+                    painter.drawRect(margin + i * columnWidth, y, columnWidth, rowHeight);
+                    painter.drawText(
+                        margin + i * columnWidth + textMargin,
+                        y + rowHeight / 2 + painter.fontMetrics().ascent() / 2,
+                        data[i]
+                    );
+                }
+
+                y += rowHeight;
+
+                // Gérer le passage à une nouvelle page
+                if (y > pdfWriter.height() - margin - rowHeight) {
+                    pdfWriter.newPage();
+                    y = margin;
+
+                    // Redessiner les en-têtes
+                    for (int i = 0; i < headers.size(); ++i) {
+                        painter.drawRect(margin + i * columnWidth, y, columnWidth, headerHeight);
+                        painter.drawText(
+                            margin + i * columnWidth + textMargin,
+                            y + headerHeight / 2 + painter.fontMetrics().ascent() / 2,
+                            headers[i]
+                        );
+                    }
+
+                    y += headerHeight;
+                }
+            }
+
+            painter.end();
+
+            // Demander si l'utilisateur veut afficher le PDF
+            int response = QMessageBox::question(this, "PDF", "Afficher le PDF ?", QMessageBox::Yes | QMessageBox::No);
+            if (response == QMessageBox::Yes) {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
+            }
+        }
+    }
+
+
+void MainWindow::on_exporter_clicked()
+{
+    exportToPdf();
+}

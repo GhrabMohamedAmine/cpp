@@ -31,7 +31,7 @@ public:
 
     QString getType() const;
     void setType(const QString &type);
-
+    void exportToPdf();
     int getBugdet() const;
     void setBudget(const int &budget);
     bool verifSalle(QDate date,QString salle);
@@ -41,6 +41,9 @@ public:
     void setRentabilite(const QString &rentabilite);
     QString getSalle() const;
     void setSalle(const QString &salle);
+    void setDanger(const QString &danger);
+    QString getDanger() const;
+
 
 private:
     int id_event;

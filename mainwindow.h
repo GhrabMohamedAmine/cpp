@@ -32,14 +32,15 @@ private slots:
     void readArduinoData();
 
     void on_Recherche_clicked();
-
+    void exportToPdf();
     void on_eventTableWidget_cellDoubleClicked(int row, int column);
 
-    void on_exportPdfButton_clicked();
-
+    void updateStatisticsChart();
     void on_gazDetect_pressed();
 
     void on_gazDetect_clicked();
+
+    void on_exporter_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -46,6 +46,7 @@
      <font>
       <family>Perpetua</family>
       <pointsize>48</pointsize>
+      <weight>75</weight>
       <italic>true</italic>
       <bold>true</bold>
       <underline>true</underline>
@@ -83,6 +84,7 @@
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -112,6 +114,7 @@ color:white</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -141,6 +144,7 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -170,6 +174,7 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -199,6 +204,7 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -228,6 +234,7 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -257,6 +264,7 @@ color:white;</string>
       <font>
        <family>Perpetua</family>
        <pointsize>10</pointsize>
+       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -322,6 +330,7 @@ color:white;</string>
        <font>
         <family>Perpetua</family>
         <pointsize>20</pointsize>
+        <weight>75</weight>
         <italic>true</italic>
         <bold>true</bold>
         <underline>true</underline>
@@ -346,6 +355,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -370,6 +380,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -394,6 +405,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -418,6 +430,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -442,6 +455,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -486,6 +500,7 @@ color:white;</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
          <underline>true</underline>
@@ -507,6 +522,7 @@ color:white;</string>
          <font>
           <family>Perpetua</family>
           <pointsize>12</pointsize>
+          <weight>75</weight>
           <italic>true</italic>
           <bold>true</bold>
          </font>
@@ -599,6 +615,7 @@ color:white;</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
+          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -628,6 +645,7 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
+          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -657,6 +675,7 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
+          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -686,6 +705,7 @@ color:white</string>
          <font>
           <family>Perpetua</family>
           <pointsize>10</pointsize>
+          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -699,7 +719,37 @@ background-color:#030C54;
 color:white</string>
         </property>
         <property name="text">
-         <string>Detecter le gaz</string>
+         <string>detecter le gaz</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="exporter">
+        <property name="geometry">
+         <rect>
+          <x>800</x>
+          <y>80</y>
+          <width>101</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Perpetua</family>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>PointingHandCursor</cursorShape>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">border:1px solid black;
+border-radius:20px;
+background-color:#030C54;
+color:white</string>
+        </property>
+        <property name="text">
+         <string>exporter</string>
         </property>
        </widget>
       </widget>
@@ -716,6 +766,7 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>10</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -745,6 +796,7 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>10</pointsize>
+         <weight>75</weight>
          <bold>true</bold>
         </font>
        </property>
@@ -774,6 +826,7 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -828,6 +881,7 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>
@@ -910,6 +964,7 @@ color:white</string>
         <font>
          <family>Perpetua</family>
          <pointsize>12</pointsize>
+         <weight>75</weight>
          <italic>true</italic>
          <bold>true</bold>
         </font>

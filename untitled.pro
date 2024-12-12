@@ -9,27 +9,17 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/client.cpp \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/mainwindow.cpp \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/qrcodegen.cpp \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/rfidmonitor.cpp \
     connection.cpp \
     event.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/client.h \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/mainwindow.h \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/qrcodegen.hpp \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/rfidmonitor.h \
     connection.h \
     event.h \
     mainwindow.h
 
 FORMS += \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/mainwindow.ui \
-    ../connecton/Souhir/Souhir/Souhir/Atelier_Connexion (9)/Atelier_Connexion (9)/Atelier_Connexion/rfidmonitor.ui \
     mainwindow.ui
 
 # Default rules for deployment.

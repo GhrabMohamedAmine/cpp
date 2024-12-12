@@ -3,6 +3,9 @@
 #include <QSqlError>
 #include <QDebug>
 #include <QMessageBox>
+#include <QPdfWriter>
+#include <QFileDialog>
+
 
 Event::Event() {}
 
@@ -255,8 +258,14 @@ QString Event::getRentabilite() const { return rentabilite; }
 void Event::setRentabilite(const QString &rentabilite) {
 this->rentabilite = rentabilite;
 }
+QString Event::getSalle() const { return salle; }
+
 void Event::setSalle(const QString &salle) {
     this->salle = salle;
 }
+void Event::setDanger(const QString &danger) {
+    this->danger = danger;
+}
+QString Event::getDanger() const { return danger; }
 
 
